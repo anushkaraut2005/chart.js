@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Chart</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    padding:20px;
+}
+
+.chart-container{
+    width:80%;
+    height:400px;
+    margin:20px auto;
+}
+
+select{
+    padding:8px;
+    font-size:16px;
+}
+</style>
+</head>
+<body>
+
+<h2>Chart Filter</h2>
+
+<label>Select Chart Type:</label>
+<select id="chartType">
+    <option value="line">Line Chart</option>
+    <option value="bar">Bar Chart</option>
+    <option value="pie">Pie Chart</option>
+    <option value="doughnut">Doughnut Chart</option>
+</select>
+
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const labels = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
+const values = [12, 29, 3, 5, 2, 3];
+
+let chart;
+
+function createChart(type){
+
+    if(chart){
+        chart.destroy();
+    }
+
+    const ctx = document.getElementById("myChart");
+
+    // Dataset
+    const dataset = {
+        label: "Votes",
+        data: values,
+        backgroundColor: [
+            "red",
+            "blue",
+            "yellow",
+            "green",
+            "purple",
+            "orange"
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+        fill: false
+    };
+
+    // Reduce only Pie & Doughnut size
+    if(type === "pie" || type === "doughnut"){
+        dataset.radius = "65%";
+    }
+
+    chart = new Chart(ctx,{
+        type: type,
+        data:{
+            labels: labels,
+            datasets:[dataset]
+        },
+        options:{
+            animations: {
+      tension: {
+        duration: 1000,
+        easing: 'linear',
+        from: 1,
+        to: 0,
+        loop: true
+      }
+    },
+            responsive:true,
+            maintainAspectRatio:false,
+
+            scales:(type === "line" || type === "bar") ? {
+                y:{
+                    beginAtZero:true,
+                    suggestedMax:30,
+                    ticks:{
+                        stepSize:5
+                    }
+                }
+            } : {}
+        }
+        
+    });
+}
+
+// Initial Chart
+createChart("line");
+
+// Dropdown Change
+document.getElementById("chartType").addEventListener("change",function(){
+    createChart(this.value);
+});
+
+</script>
+
+</body>
+</html>
